@@ -2,10 +2,14 @@ package com.jatana.gymmembershipmanagemt.model.dto.response;
 
 import com.jatana.gymmembershipmanagemt.model.enums.Gender;
 import com.jatana.gymmembershipmanagemt.model.enums.MemberStatus;
+import lombok.Builder;
+import lombok.With;
 
 import java.time.LocalDate;
 import java.util.List;
 
+@Builder
+@With
 public record MemberResponse(
 
         String memberId,
