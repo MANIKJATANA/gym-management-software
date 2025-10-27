@@ -1,7 +1,7 @@
 package com.jatana.gymmembershipmanagemt.controller;
 
 import com.jatana.gymmembershipmanagemt.model.dto.request.MembershipRequest;
-import com.jatana.gymmembershipmanagemt.model.dto.response.MembershipResponseWithPayment;
+import com.jatana.gymmembershipmanagemt.model.dto.response.MembershipDetailResponse;
 import com.jatana.gymmembershipmanagemt.model.dto.response.MembershipResponse;
 import com.jatana.gymmembershipmanagemt.service.MembershipService;
 import lombok.extern.slf4j.Slf4j;
@@ -32,9 +32,9 @@ public class MembershipController {
 
     // get a membership detail
     @GetMapping("/membership")
-    public ResponseEntity<MembershipResponseWithPayment> getMembership(@RequestParam String memberId, @RequestParam String membershipId) {
+    public ResponseEntity<MembershipDetailResponse> getMembership(@RequestParam String memberId, @RequestParam String membershipId) {
         try{
-            MembershipResponseWithPayment  membershipResponseWithPayment = membershipService.getMembership(memberId, membershipId);
+            MembershipDetailResponse membershipResponseWithPayment = membershipService.getMembership(memberId, membershipId);
             return ResponseEntity.ok(membershipResponseWithPayment);
         } catch (Exception e) {
             log.error("Error {}", e.getMessage());

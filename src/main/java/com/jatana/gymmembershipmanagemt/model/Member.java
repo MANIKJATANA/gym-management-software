@@ -1,7 +1,5 @@
 package com.jatana.gymmembershipmanagemt.model;
 
-import com.jatana.gymmembershipmanagemt.model.enums.Gender;
-import com.jatana.gymmembershipmanagemt.model.enums.MemberStatus;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
@@ -24,9 +22,8 @@ public class Member {
     private String fullName;
 
     private LocalDate dateOfBirth;
-    private int age;
 
-    private Gender gender;
+    private String gender;
 
 
     private String phoneNumber;
@@ -34,7 +31,7 @@ public class Member {
 
     private String address;
 
-    private MemberStatus memberStatus;
+    private String memberStatus;
 
     private String photoUrl;
 

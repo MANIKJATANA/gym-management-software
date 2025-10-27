@@ -35,9 +35,22 @@ public class MemberController {
     }
 
     @GetMapping("/members")
-    public ResponseEntity<List<MemberSummaryResponse>> getMembers(@RequestParam MemberStatus filter, @RequestParam String searchKey){
-        try{
-            List<MemberSummaryResponse> memberSummaryResponses = memberService.getMembers(filter,searchKey);
+    public ResponseEntity<List<MemberSummaryResponse>> getMembers(
+            @RequestParam(required = false) String filter,
+            @RequestParam(required = false, defaultValue = "") String searchKey) {
+        try {
+            MemberStatus memberStatus;
+            if (filter != null && !filter.isBlank()) {
+                try {
+                    memberStatus = MemberStatus.valueOf(filter.toUpperCase());
+                } catch (IllegalArgumentException e) {
+                    log.warn("Invalid filter value: {}", filter);
+                    throw e;
+                }
+            }else{
+                memberStatus = MemberStatus.ACTIVE;
+            }
+            List<MemberSummaryResponse> memberSummaryResponses = memberService.getMembers(memberStatus, searchKey);
             return ResponseEntity.ok(memberSummaryResponses);
         }catch (Exception e) {
             log.error("error: {}", e.getMessage());
