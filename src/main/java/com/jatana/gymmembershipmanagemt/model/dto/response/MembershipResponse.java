@@ -6,7 +6,6 @@ import java.time.LocalDate;
 
 public record MembershipResponse(
         String memberShipId,
-        String planId,
         LocalDate startDate,
         LocalDate endDate,
         double pricePaid,

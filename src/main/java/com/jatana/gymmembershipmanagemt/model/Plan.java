@@ -23,7 +23,7 @@ public class Plan {
 
     private double price;
 
-    private int description;
+    private String description;
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
