@@ -9,6 +9,9 @@ import com.jatana.gymmembershipmanagemt.model.dto.response.MemberSummaryResponse
 import com.jatana.gymmembershipmanagemt.model.dto.response.MembershipResponse;
 import com.jatana.gymmembershipmanagemt.model.enums.Gender;
 import com.jatana.gymmembershipmanagemt.model.enums.MemberStatus;
+import com.jatana.gymmembershipmanagemt.repo.MemberRepo;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -16,14 +19,19 @@ import java.time.LocalDateTime;
 import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
+@Slf4j
 @Service
 public class MemberService {
 
+    @Autowired
+    private MemberRepo memberRepo;
+
     public MemberResponse createMember(MemberRequest memberRequest) {
        Member member = getMemberFromMemberRequest(memberRequest);
-       // save member to repo
-        return getMemberResponseFromMember(member).withMembershipHistory(List.of()).withDocuments(List.of());
+       Member response = memberRepo.save(member);
+        return getMemberResponseFromMember(response).withMembershipHistory(List.of()).withDocuments(List.of());
     }
 
     private MemberResponse getMemberResponseFromMember(Member member) {
@@ -75,7 +83,8 @@ public class MemberService {
 
     public List<MemberSummaryResponse> getMembers(MemberStatus filter, String searchKey) {
 
-        List<Member> members = new ArrayList<>(); // TODO: Update this
+        List<Member> members = memberRepo.findMembersUsingFilterAndSearchKeyword(filter.toString(), searchKey);
+
         List<MemberSummaryResponse> memberSummaryResponses = new ArrayList<>();
         for(Member member: members){
             MemberSummaryResponse memberSummaryResponse = getMemberSummaryResponseFromMember(member);
@@ -95,7 +104,6 @@ public class MemberService {
                 MemberStatus.valueOf(member.getMemberStatus()),
                 member.getPhotoUrl(),
                 getEndDate(member.getMemberId())
-
         );
     }
 
@@ -104,20 +112,31 @@ public class MemberService {
     }
 
     public MemberResponse getMember(String memberId) {
-        Member member = null;
-        return getMemberResponseWithMembershipAndDocDetailFromMember(member);
+        Optional<Member> memberOptional = memberRepo.findById(memberId);
+        if (memberOptional.isPresent()) {
+            return getMemberResponseWithMembershipAndDocDetailFromMember(memberOptional.get());
+        }
+        // throw error
+        log.error("Member with id {} not found", memberId);
+        throw new IllegalArgumentException("Member with id " + memberId + " not found");
     }
 
     private List<MemberDocumentResponse> getMemberShipDocuments(String memberId) {
-        return null;
+        return List.of();
     }
 
     private List<MembershipResponse> getMembershipResponse(String memberId) {
-        return null;
+        return List.of();
     }
 
     public MemberResponse updateMember(MemberUpdateRequest memberUpdateRequest, String memberId) {
-        Member member = new Member(); //Todo: Get from repo
+
+        Optional<Member> memberOptional = memberRepo.findById(memberId);
+        if(memberOptional.isEmpty()){
+            throw new IllegalArgumentException("Member with id " + memberId + " not found");
+        }
+
+        Member member = memberOptional.get();
 
         member.setFirstName(memberUpdateRequest.firstName());
         member.setLastName(memberUpdateRequest.lastName());
@@ -128,10 +147,11 @@ public class MemberService {
         member.setEmail(memberUpdateRequest.email());
         member.setAddress(memberUpdateRequest.address());
 
-        // TODO: save member
+
+        Member response = memberRepo.save(member);
 
 
-        return getMemberResponseWithMembershipAndDocDetailFromMember(member);
+        return getMemberResponseWithMembershipAndDocDetailFromMember(response);
 
 
     }
@@ -144,13 +164,18 @@ public class MemberService {
     }
 
     public MemberResponse updateMemberStatus(String memberId, MemberStatus memberStatus) {
-        Member member = new Member();
-        // Todo: Get it from repo
+        Optional<Member> memberOptional = memberRepo.findById(memberId);
+        if(memberOptional.isEmpty()){
+            throw new IllegalArgumentException("Member with id " + memberId + " not found");
+        }
+
+        Member member = memberOptional.get();
 
         member.setMemberStatus(memberStatus.toString());
 
-        // Todo: save member
+        Member response = memberRepo.save(member);
 
-        return getMemberResponseWithMembershipAndDocDetailFromMember(member);
+
+        return getMemberResponseWithMembershipAndDocDetailFromMember(response);
     }
 }
