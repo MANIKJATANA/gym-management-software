@@ -9,7 +9,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Data
 @AllArgsConstructor
@@ -18,7 +17,7 @@ import java.util.Date;
 public class Payment {
     @Id
     private String paymentId;
-    private String memberShipId;
+    private String membershipId;
 
     private double pricePaid;
     private LocalDateTime paymentDateTime;

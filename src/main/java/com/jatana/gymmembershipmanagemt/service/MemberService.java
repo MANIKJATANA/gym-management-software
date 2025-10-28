@@ -28,6 +28,9 @@ public class MemberService {
     @Autowired
     private MemberRepo memberRepo;
 
+    @Autowired
+    private MembershipService membershipService;
+
     public MemberResponse createMember(MemberRequest memberRequest) {
        Member member = getMemberFromMemberRequest(memberRequest);
        Member response = memberRepo.save(member);
@@ -126,7 +129,7 @@ public class MemberService {
     }
 
     private List<MembershipResponse> getMembershipResponse(String memberId) {
-        return List.of();
+        return membershipService.getAllMemberships(memberId);
     }
 
     public MemberResponse updateMember(MemberUpdateRequest memberUpdateRequest, String memberId) {
