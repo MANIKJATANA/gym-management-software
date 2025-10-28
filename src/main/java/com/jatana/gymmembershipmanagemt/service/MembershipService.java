@@ -10,6 +10,8 @@ import com.jatana.gymmembershipmanagemt.repo.MembershipRepo;
 import com.jatana.gymmembershipmanagemt.repo.PaymentRepo;
 import com.jatana.gymmembershipmanagemt.repo.PlanRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import com.jatana.gymmembershipmanagemt.model.dto.response.MembershipResponse;
+import com.jatana.gymmembershipmanagemt.model.dto.response.MembershipDetailResponse;
 import org.springframework.stereotype.Service;
 
 import javax.swing.*;
