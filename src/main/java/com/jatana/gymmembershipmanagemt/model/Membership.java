@@ -1,10 +1,7 @@
 package com.jatana.gymmembershipmanagemt.model;
 
 import com.jatana.gymmembershipmanagemt.model.enums.MembershipStatus;
-import com.jatana.gymmembershipmanagemt.model.enums.PaymentStatus;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.PrePersist;
 import lombok.AllArgsConstructor;
@@ -27,8 +24,8 @@ public class Membership {
 
     private String planId;
 
-    private Date startDate;
-    private Date endDate;
+    private LocalDate startDate;
+    private LocalDate endDate;
 
     private double pricePaid;
 
