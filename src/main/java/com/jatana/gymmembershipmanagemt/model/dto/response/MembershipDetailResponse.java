@@ -1,6 +1,6 @@
 package com.jatana.gymmembershipmanagemt.model.dto.response;
 
-import com.jatana.gymmembershipmanagemt.model.Plan;
+
 
 import java.util.List;
 

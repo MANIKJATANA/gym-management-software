@@ -22,7 +22,7 @@ public class MembershipController {
     @PostMapping("/membership")
     public ResponseEntity<MembershipResponse> addMembership(@RequestParam String memberId, @RequestBody MembershipRequest membershipRequest) {
         try{
-            System.out.println("memberId: " + memberId);
+
             MembershipResponse membershipResponse = membershipService.addMembership(memberId,membershipRequest);
             return ResponseEntity.ok(membershipResponse);
         }catch (Exception e){
