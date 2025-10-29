@@ -14,7 +14,6 @@ import com.jatana.gymmembershipmanagemt.model.dto.response.MembershipResponse;
 import com.jatana.gymmembershipmanagemt.model.dto.response.MembershipDetailResponse;
 import org.springframework.stereotype.Service;
 
-import javax.swing.*;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -83,8 +82,6 @@ public class MembershipService {
             Membership membership = membershipOptional.get();
             MembershipResponse membershipResponse = getMembershipResponseFromMembership(membership);
 
-            System.out.println(membershipResponse);
-
            List<Payment> payments = paymentRepo.getPaymentsByMembershipId(membershipId);
 
            List<PaymentResponse> paymentResponses = new java.util.ArrayList<>(List.of());
@@ -120,13 +117,11 @@ public class MembershipService {
           );
 
 
-            MembershipDetailResponse membershipDetailResponse = new MembershipDetailResponse(
+            return new MembershipDetailResponse(
                   membershipResponse,
                     paymentResponses,
                     planResponse
             );
-
-            return membershipDetailResponse;
 
         }
 
