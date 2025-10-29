@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Slf4j
@@ -56,6 +57,19 @@ public class MemberController {
             log.error("error: {}", e.getMessage());
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    @GetMapping("membersByDate")
+    public ResponseEntity<List<MemberSummaryResponse>> getMembersByDate(@RequestParam LocalDate endDate){
+        try {
+
+            List<MemberSummaryResponse> memberSummaryResponses  = memberService.getMembersByDate(endDate);
+            return ResponseEntity.ok(memberSummaryResponses);
+
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
     }
 
     @GetMapping("/member")

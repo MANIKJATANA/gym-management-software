@@ -1,6 +1,7 @@
 package com.jatana.gymmembershipmanagemt.service;
 
 import com.jatana.gymmembershipmanagemt.model.Member;
+import com.jatana.gymmembershipmanagemt.model.Membership;
 import com.jatana.gymmembershipmanagemt.model.dto.request.MemberRequest;
 import com.jatana.gymmembershipmanagemt.model.dto.request.MemberUpdateRequest;
 import com.jatana.gymmembershipmanagemt.model.dto.response.MemberDocumentResponse;
@@ -10,6 +11,7 @@ import com.jatana.gymmembershipmanagemt.model.dto.response.MembershipResponse;
 import com.jatana.gymmembershipmanagemt.model.enums.Gender;
 import com.jatana.gymmembershipmanagemt.model.enums.MemberStatus;
 import com.jatana.gymmembershipmanagemt.repo.MemberRepo;
+import com.jatana.gymmembershipmanagemt.repo.MembershipRepo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,6 +32,9 @@ public class MemberService {
 
     @Autowired
     private MembershipService membershipService;
+
+    @Autowired
+    private MembershipRepo membershipRepo;
 
     public MemberResponse createMember(MemberRequest memberRequest) {
        Member member = getMemberFromMemberRequest(memberRequest);
@@ -111,7 +116,13 @@ public class MemberService {
     }
 
     private LocalDate getEndDate(String memberId) {
-        return LocalDate.now().plusMonths(1); //TODO : Get this from repo
+
+        Optional<Membership> latestMembershipOptional = membershipRepo.findTopByMemberIdOrderByEndDateDesc(memberId);
+        return latestMembershipOptional
+                .map(Membership::getEndDate)
+                .orElse(LocalDate.of(2000, 1, 1));
+
+
     }
 
     public MemberResponse getMember(String memberId) {
@@ -180,5 +191,16 @@ public class MemberService {
 
 
         return getMemberResponseWithMembershipAndDocDetailFromMember(response);
+    }
+
+    public List<MemberSummaryResponse> getMembersByDate(LocalDate endDate) {
+        List<Member> members = memberRepo.findMembersUsingFilterAndSearchKeyword(
+                MemberStatus.ACTIVE.toString(), ""
+        );
+
+        return members.stream()
+                .filter(member -> !getEndDate(member.getMemberId()).isAfter(endDate))
+                .map(this::getMemberSummaryResponseFromMember)
+                .toList();
     }
 }
