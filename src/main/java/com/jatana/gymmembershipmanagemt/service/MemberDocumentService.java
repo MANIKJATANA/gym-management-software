@@ -59,7 +59,6 @@ public class MemberDocumentService {
 
         Member member = memberOptional.get();
         String docUrl= getImageUrl(memberId, memberDocumentUploadRequest);
-        System.out.println(docUrl);
         MemberDocumentResponse memberDocumentResponse = getMemberDocumentResponse(memberId, docType, docUrl);
 
         if(docType == DocType.PHOTO){
