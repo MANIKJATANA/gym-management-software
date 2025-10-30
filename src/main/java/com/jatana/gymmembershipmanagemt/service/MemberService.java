@@ -36,6 +36,9 @@ public class MemberService {
     @Autowired
     private MembershipRepo membershipRepo;
 
+    @Autowired
+    private MemberDocumentService memberDocumentService;
+
     public MemberResponse createMember(MemberRequest memberRequest) {
        Member member = getMemberFromMemberRequest(memberRequest);
        Member response = memberRepo.save(member);
@@ -136,7 +139,13 @@ public class MemberService {
     }
 
     private List<MemberDocumentResponse> getMemberShipDocuments(String memberId) {
-        return List.of();
+        try{
+            return memberDocumentService.getMemberShipDocuments(memberId);
+        }
+        catch(Exception e){
+            log.error(e.getMessage());
+            throw e;
+        }
     }
 
     private List<MembershipResponse> getMembershipResponse(String memberId) {
