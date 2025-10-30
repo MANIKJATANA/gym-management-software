@@ -3,7 +3,6 @@ package com.jatana.gymmembershipmanagemt.model;
 import com.jatana.gymmembershipmanagemt.model.enums.DocType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import jakarta.persistence.PrePersist;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -25,11 +24,4 @@ public class MemberDocument {
     private String url;
 
     private LocalDateTime uploadedAt;
-
-    @PrePersist
-    public void ensureId() {
-        if (documentId == null || documentId.isEmpty()) {
-            documentId = com.jatana.gymmembershipmanagemt.util.UuidGenerator.generateId();
-        }
-    }
 }
