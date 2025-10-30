@@ -1,5 +1,6 @@
 package com.jatana.gymmembershipmanagemt.service;
 
+import com.cloudinary.Cloudinary;
 import com.jatana.gymmembershipmanagemt.model.Member;
 import com.jatana.gymmembershipmanagemt.model.MemberDocument;
 import com.jatana.gymmembershipmanagemt.model.dto.request.MemberDocumentUploadRequest;
@@ -11,8 +12,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Slf4j
@@ -24,6 +27,28 @@ public class MemberDocumentService {
     @Autowired
     private MemberDocumentRepo memberDocumentRepo;
 
+    @Autowired
+    private Cloudinary cloudinary;
+
+    private String getImageUrl(String memberId, MemberDocumentUploadRequest memberDocumentUploadRequest) {
+        try {
+            String filename = memberId + "-" + memberDocumentUploadRequest.docType().name();
+
+            Map<String, Object> params = Map.of(
+                    "public_id", filename,
+                    "overwrite", true
+            );
+
+            Map<String, Object> uploadedResult = cloudinary.uploader()
+                    .upload(memberDocumentUploadRequest.file().getBytes(), params);
+
+            return uploadedResult.get("secure_url").toString();
+
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to upload document for member: " + memberId, e);
+        }
+    }
+
     public MemberDocumentResponse uploadDocument(String memberId, MemberDocumentUploadRequest memberDocumentUploadRequest) {
         DocType docType = memberDocumentUploadRequest.docType();
         Optional<Member> memberOptional = memberRepo.findById(memberId);
@@ -33,7 +58,8 @@ public class MemberDocumentService {
         }
 
         Member member = memberOptional.get();
-        String docUrl= docType.name();
+        String docUrl= getImageUrl(memberId, memberDocumentUploadRequest);
+        System.out.println(docUrl);
         MemberDocumentResponse memberDocumentResponse = getMemberDocumentResponse(memberId, docType, docUrl);
 
         if(docType == DocType.PHOTO){
