@@ -1,0 +1,16 @@
+# --- Application Info ---
+spring.application.name=gym-membership-managemt
+
+# --- Database Configuration ---
+spring.datasource.driver-class-name=org.postgresql.Driver
+spring.datasource.url=${DB_URL}
+spring.datasource.username=${DB_USERNAME}
+spring.datasource.password=${DB_PASSWORD}
+
+# --- Hibernate Configuration ---
+spring.jpa.hibernate.ddl-auto=update
+
+# --- Cloudinary Configuration ---
+cloudinary.cloud.name=${CLOUDINARY_CLOUD_NAME}
+cloudinary.api.key=${CLOUDINARY_API_KEY}
+cloudinary.api.secret=${CLOUDINARY_API_SECRET}
