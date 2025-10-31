@@ -38,3 +38,5 @@ application.properties
 
 # But keep the example file
 !application.properties.example
+
+todo.txt
