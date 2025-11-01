@@ -1,7 +1,6 @@
 package com.jatana.gymmembershipmanagemt.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,6 +12,9 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@Table(indexes = {
+        @Index(name = "idx_member_status", columnList = "member_status")
+})
 public class Member {
     @Id
     private String memberId;
@@ -37,9 +39,5 @@ public class Member {
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-
-
-
-
 
 }

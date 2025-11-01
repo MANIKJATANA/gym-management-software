@@ -5,7 +5,7 @@ import com.jatana.gymmembershipmanagemt.model.enums.MembershipStatus;
 import java.time.LocalDate;
 
 public record MembershipResponse(
-        String memberShipId,
+        String membershipId,
         LocalDate startDate,
         LocalDate endDate,
         double pricePaid,

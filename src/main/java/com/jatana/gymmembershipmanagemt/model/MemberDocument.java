@@ -3,6 +3,8 @@ package com.jatana.gymmembershipmanagemt.model;
 import com.jatana.gymmembershipmanagemt.model.enums.DocType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,6 +15,9 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@Table(indexes = {
+        @Index(name = "idx_member_document_member", columnList = "member_id")
+})
 public class MemberDocument {
     @Id
     private String documentId;

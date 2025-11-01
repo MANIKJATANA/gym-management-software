@@ -151,10 +151,10 @@ public class MembershipService {
                     Plan plan = planOptional.get();
                     planResponse = new PlanResponse(
                             plan.getPlanId(),
-                            plan.getPlanName(),
-                            plan.getDuration_months(),
-                            plan.getPrice(),
-                            plan.getDescription()
+                                    plan.getPlanName(),
+                                    plan.getDurationMonths(),
+                                    plan.getPrice(),
+                                    plan.getDescription()
                     );
                     log.debug("Successfully retrieved plan details for plan ID: {}", planId);
                 } else {

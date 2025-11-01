@@ -1,9 +1,7 @@
 package com.jatana.gymmembershipmanagemt.model;
 
 import com.jatana.gymmembershipmanagemt.model.enums.PaymentMethod;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.PrePersist;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,6 +12,9 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@Table(indexes = {
+        @Index(name = "idx_payment_membership", columnList = "membership_id")
+})
 public class Payment {
     @Id
     private String paymentId;
