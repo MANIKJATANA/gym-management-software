@@ -1,9 +1,7 @@
 package com.jatana.gymmembershipmanagemt.model;
 
 import com.jatana.gymmembershipmanagemt.model.enums.MembershipStatus;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.PrePersist;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,6 +15,11 @@ import com.jatana.gymmembershipmanagemt.util.UuidGenerator;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
+
+@Table(indexes = {
+        @Index(name = "idx_membership_member_end_date", columnList = "member_id, end_date"),
+        @Index(name = "idx_membership_id", columnList = "membership_id")
+})
 public class Membership {
     @Id
     private String membershipId;

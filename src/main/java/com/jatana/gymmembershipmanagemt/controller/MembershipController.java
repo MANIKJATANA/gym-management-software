@@ -31,7 +31,7 @@ public class MembershipController {
             MembershipResponse membershipResponse = membershipService.addMembership(memberId, membershipRequest);
             
             log.info("Successfully created membership - membership ID: {}, member ID: {}, plan ID: {}, price paid: {}", 
-                    membershipResponse.memberShipId(), memberId,
+                    membershipResponse.membershipId(), memberId,
                     membershipRequest.planId(), membershipRequest.pricePaid());
             
             return new ResponseEntity<>(membershipResponse, HttpStatus.CREATED);

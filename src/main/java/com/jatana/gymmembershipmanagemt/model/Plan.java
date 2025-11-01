@@ -1,8 +1,6 @@
 package com.jatana.gymmembershipmanagemt.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.PrePersist;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,7 +17,7 @@ public class Plan {
 
     private String planName;
 
-    private int duration_months;
+    private int durationMonths;
 
     private double price;
 

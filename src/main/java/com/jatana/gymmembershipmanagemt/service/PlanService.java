@@ -49,7 +49,7 @@ public class PlanService {
         return new PlanResponse(
                 plan.getPlanId(),
                 plan.getPlanName(),
-                plan.getDuration_months(),
+                plan.getDurationMonths(),
                 plan.getPrice(),
                 plan.getDescription()
         );
@@ -63,7 +63,7 @@ public class PlanService {
         plan.setPlanName(planRequest.planName());
         plan.setDescription(planRequest.description());
         plan.setPrice(planRequest.price());
-        plan.setDuration_months(planRequest.duration_months());
+    plan.setDurationMonths(planRequest.durationMonths());
         plan.setCreatedAt(LocalDateTime.now());
         plan.setUpdatedAt(LocalDateTime.now());
         plan.setDescription(planRequest.description());
@@ -135,12 +135,12 @@ public class PlanService {
         try {
             Plan plan = planOptional.get();
             
-            log.debug("Updating plan details - ID: {}, Price: {}, Duration: {} months", 
-                    planId, planRequest.price(), planRequest.duration_months());
+        log.debug("Updating plan details - ID: {}, Price: {}, Duration: {} months", 
+            planId, planRequest.price(), planRequest.durationMonths());
             
             plan.setDescription(planRequest.description());
             plan.setPrice(planRequest.price());
-            plan.setDuration_months(planRequest.duration_months());
+            plan.setDurationMonths(planRequest.durationMonths());
             plan.setUpdatedAt(LocalDateTime.now());
             
             Plan response = planRepo.save(plan);
