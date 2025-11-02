@@ -10,6 +10,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import jakarta.servlet.http.HttpServletRequest;
+import java.time.LocalDateTime;
+import com.jatana.gymmembershipmanagemt.model.dto.response.ErrorResponse;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -24,7 +27,7 @@ public class MemberController {
     private MemberService memberService;
 
     @PostMapping("/member")
-    public ResponseEntity<MemberResponse> createMember(@RequestBody MemberRequest memberRequest) {
+    public ResponseEntity<?> createMember(@RequestBody MemberRequest memberRequest, HttpServletRequest request) {
         log.info("Received request to create member - ID: {}, name: {} {}, email: {}", 
                 memberRequest.memberId(), 
                 memberRequest.firstName(), 
@@ -41,22 +44,37 @@ public class MemberController {
             
             return new ResponseEntity<>(memberResponse, HttpStatus.CREATED);
             
-        } catch (IllegalArgumentException e) {
-            log.error("Bad request while creating member - ID: {}, email: {}. Error: {}", 
-                    memberRequest.memberId(), memberRequest.email(), e.getMessage());
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+    } catch (IllegalArgumentException e) {
+        log.error("Bad request while creating member - ID: {}, email: {}. Error: {}", 
+            memberRequest.memberId(), memberRequest.email(), e.getMessage());
+        ErrorResponse err = ErrorResponse.builder()
+            .timestamp(LocalDateTime.now())
+            .status(HttpStatus.BAD_REQUEST.value())
+            .error(HttpStatus.BAD_REQUEST.getReasonPhrase())
+            .message(e.getMessage())
+            .path(request.getRequestURI())
+            .build();
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err);
             
-        } catch (Exception e) {
-            log.error("Internal error while creating member - ID: {}, email: {}. Error: {}", 
-                    memberRequest.memberId(), memberRequest.email(), e.getMessage(), e);
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+    } catch (Exception e) {
+        log.error("Internal error while creating member - ID: {}, email: {}. Error: {}", 
+            memberRequest.memberId(), memberRequest.email(), e.getMessage(), e);
+        ErrorResponse err = ErrorResponse.builder()
+            .timestamp(LocalDateTime.now())
+            .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
+            .error(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase())
+            .message("Internal server error")
+            .path(request.getRequestURI())
+            .build();
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(err);
         }
     }
 
     @GetMapping("/members")
-    public ResponseEntity<List<MemberSummaryResponse>> getMembers(
-            @RequestParam(required = false) String filter,
-            @RequestParam(required = false, defaultValue = "") String searchKey) {
+    public ResponseEntity<?> getMembers(
+        @RequestParam(required = false) String filter,
+        @RequestParam(required = false, defaultValue = "") String searchKey,
+        HttpServletRequest request) {
         
         log.info("Received request to fetch members - filter: {}, search key: '{}'", filter, searchKey);
         
@@ -68,7 +86,14 @@ public class MemberController {
                     log.debug("Using filter status: {}", memberStatus);
                 } catch (IllegalArgumentException e) {
                     log.error("Invalid filter value provided: {}. Valid values are: ACTIVE, INACTIVE", filter);
-                    return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+                    ErrorResponse err = ErrorResponse.builder()
+                            .timestamp(LocalDateTime.now())
+                            .status(HttpStatus.BAD_REQUEST.value())
+                            .error(HttpStatus.BAD_REQUEST.getReasonPhrase())
+                            .message("Invalid filter value: " + filter)
+                            .path(request.getRequestURI())
+                            .build();
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err);
                 }
             } else {
                 memberStatus = MemberStatus.ACTIVE;
@@ -83,15 +108,22 @@ public class MemberController {
             
             return ResponseEntity.ok(memberSummaryResponses);
             
-        } catch (Exception e) {
-            log.error("Internal error while fetching members - filter: {}, search key: '{}'. Error: {}", 
-                    filter, searchKey, e.getMessage(), e);
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+    } catch (Exception e) {
+        log.error("Internal error while fetching members - filter: {}, search key: '{}'. Error: {}", 
+            filter, searchKey, e.getMessage(), e);
+        ErrorResponse err = ErrorResponse.builder()
+            .timestamp(LocalDateTime.now())
+            .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
+            .error(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase())
+            .message("Internal server error")
+            .path(request.getRequestURI())
+            .build();
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(err);
         }
     }
 
     @GetMapping("/membersByDate")
-    public ResponseEntity<List<MemberSummaryResponse>> getMembersByDate(@RequestParam LocalDate endDate) {
+    public ResponseEntity<?> getMembersByDate(@RequestParam LocalDate endDate, HttpServletRequest request) {
         log.info("Received request to fetch members by end date: {}", endDate);
         
         try {
@@ -102,15 +134,22 @@ public class MemberController {
             
             return ResponseEntity.ok(memberSummaryResponses);
             
-        } catch (Exception e) {
-            log.error("Internal error while fetching members by date: {}. Error: {}", 
-                    endDate, e.getMessage(), e);
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+    } catch (Exception e) {
+        log.error("Internal error while fetching members by date: {}. Error: {}", 
+            endDate, e.getMessage(), e);
+        ErrorResponse err = ErrorResponse.builder()
+            .timestamp(LocalDateTime.now())
+            .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
+            .error(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase())
+            .message("Internal server error")
+            .path(request.getRequestURI())
+            .build();
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(err);
         }
     }
 
     @GetMapping("/member")
-    public ResponseEntity<MemberResponse> getMember(@RequestParam String memberId) {
+    public ResponseEntity<?> getMember(@RequestParam String memberId, HttpServletRequest request) {
         log.info("Received request to fetch member details - ID: {}", memberId);
         
         try {
@@ -123,19 +162,34 @@ public class MemberController {
             
         } catch (IllegalArgumentException e) {
             log.error("Member not found with ID: {}. Error: {}", memberId, e.getMessage());
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+            ErrorResponse err = ErrorResponse.builder()
+                    .timestamp(LocalDateTime.now())
+                    .status(HttpStatus.NOT_FOUND.value())
+                    .error(HttpStatus.NOT_FOUND.getReasonPhrase())
+                    .message(e.getMessage())
+                    .path(request.getRequestURI())
+                    .build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(err);
             
         } catch (Exception e) {
             log.error("Internal error while fetching member - ID: {}. Error: {}", 
                     memberId, e.getMessage(), e);
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+            ErrorResponse err = ErrorResponse.builder()
+                    .timestamp(LocalDateTime.now())
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                    .error(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase())
+                    .message("Internal server error")
+                    .path(request.getRequestURI())
+                    .build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(err);
         }
     }
 
     @PutMapping("/member")
-    public ResponseEntity<MemberResponse> updateMember(
-            @RequestParam String memberId, 
-            @RequestBody MemberUpdateRequest memberUpdateRequest) {
+    public ResponseEntity<?> updateMember(
+        @RequestParam String memberId, 
+        @RequestBody MemberUpdateRequest memberUpdateRequest,
+        HttpServletRequest request) {
         
         log.info("Received request to update member - ID: {}, new name: {} {}", 
                 memberId, 
@@ -150,22 +204,37 @@ public class MemberController {
             
             return ResponseEntity.ok(memberResponse);
             
-        } catch (IllegalArgumentException e) {
-            log.error("Cannot update - Member not found with ID: {}. Error: {}", 
-                    memberId, e.getMessage());
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+    } catch (IllegalArgumentException e) {
+        log.error("Cannot update - Member not found with ID: {}. Error: {}", 
+            memberId, e.getMessage());
+        ErrorResponse err = ErrorResponse.builder()
+            .timestamp(LocalDateTime.now())
+            .status(HttpStatus.NOT_FOUND.value())
+            .error(HttpStatus.NOT_FOUND.getReasonPhrase())
+            .message(e.getMessage())
+            .path(request.getRequestURI())
+            .build();
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(err);
             
         } catch (Exception e) {
             log.error("Internal error while updating member - ID: {}. Error: {}", 
                     memberId, e.getMessage(), e);
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        ErrorResponse err = ErrorResponse.builder()
+            .timestamp(LocalDateTime.now())
+            .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
+            .error(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase())
+            .message("Internal server error")
+            .path(request.getRequestURI())
+            .build();
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(err);
         }
     }
 
     @PatchMapping("/member")
-    public ResponseEntity<MemberResponse> updateMemberStatus(
-            @RequestParam String memberId, 
-            @RequestBody MemberStatus memberStatus) {
+    public ResponseEntity<?> updateMemberStatus(
+        @RequestParam String memberId, 
+        @RequestBody MemberStatus memberStatus,
+        HttpServletRequest request) {
         
         log.info("Received request to update member status - ID: {}, new status: {}", 
                 memberId, memberStatus);
@@ -178,15 +247,29 @@ public class MemberController {
             
             return ResponseEntity.ok(memberResponse);
             
-        } catch (IllegalArgumentException e) {
-            log.error("Cannot update status - Member not found with ID: {}. Error: {}", 
-                    memberId, e.getMessage());
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+    } catch (IllegalArgumentException e) {
+        log.error("Cannot update status - Member not found with ID: {}. Error: {}", 
+            memberId, e.getMessage());
+        ErrorResponse err = ErrorResponse.builder()
+            .timestamp(LocalDateTime.now())
+            .status(HttpStatus.NOT_FOUND.value())
+            .error(HttpStatus.NOT_FOUND.getReasonPhrase())
+            .message(e.getMessage())
+            .path(request.getRequestURI())
+            .build();
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(err);
             
         } catch (Exception e) {
             log.error("Internal error while updating member status - ID: {}, target status: {}. Error: {}", 
                     memberId, memberStatus, e.getMessage(), e);
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        ErrorResponse err = ErrorResponse.builder()
+            .timestamp(LocalDateTime.now())
+            .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
+            .error(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase())
+            .message("Internal server error")
+            .path(request.getRequestURI())
+            .build();
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(err);
         }
     }
 }
