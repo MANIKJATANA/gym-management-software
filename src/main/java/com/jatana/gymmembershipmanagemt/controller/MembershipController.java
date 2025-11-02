@@ -8,6 +8,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import jakarta.servlet.http.HttpServletRequest;
+import java.time.LocalDateTime;
+import com.jatana.gymmembershipmanagemt.model.dto.response.ErrorResponse;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
@@ -19,9 +22,10 @@ public class MembershipController {
     private MembershipService membershipService;
 
     @PostMapping("/membership")
-    public ResponseEntity<MembershipResponse> addMembership(
+    public ResponseEntity<?> addMembership(
             @RequestParam String memberId, 
-            @RequestBody MembershipRequest membershipRequest) {
+            @RequestBody MembershipRequest membershipRequest,
+            HttpServletRequest request) {
         
         log.info("Received request to create membership - member ID: {}, plan ID: {}, start date: {}, end date: {}", 
                 memberId, membershipRequest.planId(), 
@@ -39,19 +43,34 @@ public class MembershipController {
         } catch (IllegalArgumentException e) {
             log.error("Bad request while creating membership for member ID: {}. Error: {}", 
                     memberId, e.getMessage());
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+            ErrorResponse err = ErrorResponse.builder()
+                    .timestamp(LocalDateTime.now())
+                    .status(HttpStatus.BAD_REQUEST.value())
+                    .error(HttpStatus.BAD_REQUEST.getReasonPhrase())
+                    .message(e.getMessage())
+                    .path(request.getRequestURI())
+                    .build();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err);
             
         } catch (Exception e) {
             log.error("Internal error while creating membership for member ID: {}, plan ID: {}. Error: {}", 
                     memberId, membershipRequest.planId(), e.getMessage(), e);
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+            ErrorResponse err = ErrorResponse.builder()
+                    .timestamp(LocalDateTime.now())
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                    .error(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase())
+                    .message("Internal server error")
+                    .path(request.getRequestURI())
+                    .build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(err);
         }
     }
 
     @GetMapping("/membership")
-    public ResponseEntity<MembershipDetailResponse> getMembership(
+    public ResponseEntity<?> getMembership(
             @RequestParam String memberId, 
-            @RequestParam String membershipId) {
+            @RequestParam String membershipId,
+            HttpServletRequest request) {
         
         log.info("Received request to fetch membership details - member ID: {}, membership ID: {}", 
                 memberId, membershipId);
@@ -69,12 +88,26 @@ public class MembershipController {
         } catch (IllegalArgumentException e) {
             log.error("Membership not found or access denied - member ID: {}, membership ID: {}. Error: {}", 
                     memberId, membershipId, e.getMessage());
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+            ErrorResponse err = ErrorResponse.builder()
+                    .timestamp(LocalDateTime.now())
+                    .status(HttpStatus.NOT_FOUND.value())
+                    .error(HttpStatus.NOT_FOUND.getReasonPhrase())
+                    .message(e.getMessage())
+                    .path(request.getRequestURI())
+                    .build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(err);
             
         } catch (Exception e) {
             log.error("Internal error while fetching membership - member ID: {}, membership ID: {}. Error: {}", 
                     memberId, membershipId, e.getMessage(), e);
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+            ErrorResponse err = ErrorResponse.builder()
+                    .timestamp(LocalDateTime.now())
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                    .error(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase())
+                    .message("Internal server error")
+                    .path(request.getRequestURI())
+                    .build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(err);
         }
     }
 }
