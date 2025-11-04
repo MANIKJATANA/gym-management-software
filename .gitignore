@@ -40,3 +40,6 @@ application.properties
 !application.properties.example
 
 todo.txt
+
+.env
+!.env.keys

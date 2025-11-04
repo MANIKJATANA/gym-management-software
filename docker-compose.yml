@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: ${POSTGRES_IMAGE:?POSTGRES_IMAGE is required}
+    env_file: .env
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:?POSTGRES_DB is required}
+      POSTGRES_USER: ${POSTGRES_USER:?POSTGRES_USER is required}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
+    ports:
+      - "${POSTGRES_PORT:?POSTGRES_PORT is required}:${POSTGRES_PORT:?POSTGRES_PORT is required}"
+    networks:
+      - my-network
+    volumes:
+      - my-volume:/var/lib/postgresql
+
+  app:
+    build: .
+    env_file: .env
+    depends_on:
+      - postgres
+    ports:
+      - "${APP_PORT:?APP_PORT is required}:${APP_PORT:?APP_PORT is required}"
+    networks:
+      - my-network
+    environment:
+      SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL:?SPRING_DATASOURCE_URL is required}
+      SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME:?SPRING_DATASOURCE_USERNAME is required}
+      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD:?SPRING_DATASOURCE_PASSWORD is required}
+      SPRING_JPA_HIBERNATE_DDL_AUTO: ${SPRING_JPA_HIBERNATE_DDL_AUTO:?SPRING_JPA_HIBERNATE_DDL_AUTO is required}
+      SPRING_JPA_SHOW_SQL: ${SPRING_JPA_SHOW_SQL:?SPRING_JPA_SHOW_SQL is required}
+      SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: ${SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT:?SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT is required}
+      CLOUDINARY_CLOUD_NAME: ${CLOUDINARY_CLOUD_NAME:?CLOUDINARY_CLOUD_NAME is required}
+      CLOUDINARY_API_KEY: ${CLOUDINARY_API_KEY:?CLOUDINARY_API_KEY is required}
+      CLOUDINARY_API_SECRET: ${CLOUDINARY_API_SECRET:?CLOUDINARY_API_SECRET is required}
+
+networks:
+  my-network:
+    driver: bridge
+
+volumes:
+  my-volume:
