@@ -2,10 +2,19 @@ package com.jatana.gymmembershipmanagemt.controller;
 
 import com.jatana.gymmembershipmanagemt.model.dto.request.MemberDocumentUploadRequest;
 import com.jatana.gymmembershipmanagemt.model.dto.response.MemberDocumentResponse;
+import com.jatana.gymmembershipmanagemt.model.enums.DocType;
 import com.jatana.gymmembershipmanagemt.service.MemberDocumentService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
@@ -16,14 +25,50 @@ import org.springframework.web.multipart.MultipartFile;
 @Slf4j
 @RestController
 @RequestMapping("/api")
+@Tag(name = "Member Documents", description = "APIs for managing member documents (photos, ID proofs, etc.)")
 public class MemberDocumentController {
 
     @Autowired
     private MemberDocumentService memberDocumentService;
 
-    @PostMapping("/member/upload/document")
+    @Operation(
+        summary = "Upload member document",
+        description = "Uploads a document (photo, ID proof, etc.) for a member"
+    )
+    @ApiResponses(value = {
+        @ApiResponse(
+            responseCode = "201",
+            description = "Document uploaded successfully",
+            content = @Content(schema = @Schema(implementation = MemberDocumentResponse.class))
+        ),
+        @ApiResponse(
+            responseCode = "400",
+            description = "Invalid request data or empty file",
+            content = @Content(schema = @Schema(implementation = ErrorResponse.class))
+        ),
+        @ApiResponse(
+            responseCode = "503",
+            description = "Document storage service unavailable",
+            content = @Content(schema = @Schema(implementation = ErrorResponse.class))
+        ),
+        @ApiResponse(
+            responseCode = "500",
+            description = "Internal server error",
+            content = @Content(schema = @Schema(implementation = ErrorResponse.class))
+        )
+    })
+    @PostMapping(
+        value = "/member/upload/document",
+        consumes = MediaType.MULTIPART_FORM_DATA_VALUE
+    )
     public ResponseEntity<?> uploadDocument(
+            @Parameter(description = "ID of the member", required = true)
             @RequestParam String memberId, 
+            @Parameter(
+                description = "Document file and type",
+                required = true,
+                schema = @Schema(implementation = MemberDocumentUploadRequest.class)
+            )
             @ModelAttribute MemberDocumentUploadRequest memberDocumentUploadRequest,
             HttpServletRequest request) {
         
