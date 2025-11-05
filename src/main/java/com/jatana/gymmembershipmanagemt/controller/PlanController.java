@@ -3,6 +3,13 @@ package com.jatana.gymmembershipmanagemt.controller;
 import com.jatana.gymmembershipmanagemt.model.dto.request.PlanRequest;
 import com.jatana.gymmembershipmanagemt.model.dto.response.PlanResponse;
 import com.jatana.gymmembershipmanagemt.service.PlanService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,13 +24,42 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/api")
+@Tag(name = "Membership Plans", description = "APIs for managing gym membership plans")
 public class PlanController {
 
     @Autowired
     private PlanService planService;
 
+    @Operation(
+        summary = "Create a new membership plan",
+        description = "Creates a new membership plan with specified duration and price"
+    )
+    @ApiResponses(value = {
+        @ApiResponse(
+            responseCode = "201",
+            description = "Plan created successfully",
+            content = @Content(schema = @Schema(implementation = PlanResponse.class))
+        ),
+        @ApiResponse(
+            responseCode = "400",
+            description = "Invalid request data",
+            content = @Content(schema = @Schema(implementation = ErrorResponse.class))
+        ),
+        @ApiResponse(
+            responseCode = "500",
+            description = "Internal server error",
+            content = @Content(schema = @Schema(implementation = ErrorResponse.class))
+        )
+    })
     @PostMapping("/plan")
-    public ResponseEntity<?> createPlan(@RequestBody PlanRequest planRequest, HttpServletRequest request) {
+    public ResponseEntity<?> createPlan(
+        @io.swagger.v3.oas.annotations.parameters.RequestBody(
+            description = "Plan details to create",
+            required = true,
+            content = @Content(schema = @Schema(implementation = PlanRequest.class))
+        )
+        @RequestBody PlanRequest planRequest,
+        HttpServletRequest request) {
         log.info("Received request to create plan: {}", planRequest.planName());
         
         try {
@@ -57,6 +93,22 @@ public class PlanController {
         }
     }
 
+    @Operation(
+        summary = "Get all membership plans",
+        description = "Retrieves all available membership plans"
+    )
+    @ApiResponses(value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "Successfully retrieved plans",
+            content = @Content(schema = @Schema(implementation = PlanResponse.class))
+        ),
+        @ApiResponse(
+            responseCode = "500",
+            description = "Internal server error",
+            content = @Content(schema = @Schema(implementation = ErrorResponse.class))
+        )
+    })
     @GetMapping("/plans")
     public ResponseEntity<?> getPlans(HttpServletRequest request) {
         log.info("Received request to fetch all plans");
@@ -79,8 +131,32 @@ public class PlanController {
         }
     }
 
+    @Operation(
+        summary = "Get plan details",
+        description = "Retrieves details of a specific membership plan"
+    )
+    @ApiResponses(value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "Successfully retrieved plan details",
+            content = @Content(schema = @Schema(implementation = PlanResponse.class))
+        ),
+        @ApiResponse(
+            responseCode = "404",
+            description = "Plan not found",
+            content = @Content(schema = @Schema(implementation = ErrorResponse.class))
+        ),
+        @ApiResponse(
+            responseCode = "500",
+            description = "Internal server error",
+            content = @Content(schema = @Schema(implementation = ErrorResponse.class))
+        )
+    })
     @GetMapping("/plan")
-    public ResponseEntity<?> getPlan(@RequestParam("planId") String planId, HttpServletRequest request) {
+    public ResponseEntity<?> getPlan(
+        @Parameter(description = "ID of the plan to retrieve", required = true)
+        @RequestParam("planId") String planId,
+        HttpServletRequest request) {
         log.info("Received request to fetch plan with ID: {}", planId);
         
         try {
@@ -113,8 +189,31 @@ public class PlanController {
         }
     }
 
+    @Operation(
+        summary = "Delete a membership plan",
+        description = "Deletes a specific membership plan"
+    )
+    @ApiResponses(value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "Plan deleted successfully"
+        ),
+        @ApiResponse(
+            responseCode = "404",
+            description = "Plan not found",
+            content = @Content(schema = @Schema(implementation = ErrorResponse.class))
+        ),
+        @ApiResponse(
+            responseCode = "500",
+            description = "Internal server error",
+            content = @Content(schema = @Schema(implementation = ErrorResponse.class))
+        )
+    })
     @DeleteMapping("/plan")
-    public ResponseEntity<?> deletePlan(@RequestParam("planId") String planId, HttpServletRequest request) {
+    public ResponseEntity<?> deletePlan(
+        @Parameter(description = "ID of the plan to delete", required = true)
+        @RequestParam("planId") String planId,
+        HttpServletRequest request) {
         log.info("Received request to delete plan with ID: {}", planId);
         
         try {
@@ -148,8 +247,36 @@ public class PlanController {
         }
     }
 
+    @Operation(
+        summary = "Update a membership plan",
+        description = "Updates details of an existing membership plan"
+    )
+    @ApiResponses(value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "Plan updated successfully",
+            content = @Content(schema = @Schema(implementation = PlanResponse.class))
+        ),
+        @ApiResponse(
+            responseCode = "404",
+            description = "Plan not found",
+            content = @Content(schema = @Schema(implementation = ErrorResponse.class))
+        ),
+        @ApiResponse(
+            responseCode = "500",
+            description = "Internal server error",
+            content = @Content(schema = @Schema(implementation = ErrorResponse.class))
+        )
+    })
     @PutMapping("/plan")
-    public ResponseEntity<?> updatePlan(@RequestBody PlanRequest planRequest, HttpServletRequest request) {
+    public ResponseEntity<?> updatePlan(
+        @io.swagger.v3.oas.annotations.parameters.RequestBody(
+            description = "Updated plan details",
+            required = true,
+            content = @Content(schema = @Schema(implementation = PlanRequest.class))
+        )
+        @RequestBody PlanRequest planRequest,
+        HttpServletRequest request) {
         log.info("Received request to update plan: {}", planRequest.planName());
         
         try {
