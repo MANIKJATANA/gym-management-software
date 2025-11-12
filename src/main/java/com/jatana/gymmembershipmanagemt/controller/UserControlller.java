@@ -2,6 +2,6 @@ package com.jatana.gymmembershipmanagemt.controller;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
 
-@CrossOrigin(origins = "*", allowedHeaders = "*", allowCredentials = "true")
+@CrossOrigin
 public class UserControlller {
 }

@@ -25,7 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @RestController
-@CrossOrigin(origins = "*", allowedHeaders = "*", allowCredentials = "true")
+@CrossOrigin
 @RequestMapping("/api")
 @Tag(name = "Member Documents", description = "APIs for managing member documents (photos, ID proofs, etc.)")
 public class MemberDocumentController {

@@ -24,7 +24,7 @@ import java.util.List;
 
 @Slf4j
 @RestController
-@CrossOrigin(origins = "*", allowedHeaders = "*", allowCredentials = "true")
+@CrossOrigin
 @RequestMapping("/api")
 @Tag(name = "Membership Plans", description = "APIs for managing gym membership plans")
 public class PlanController {

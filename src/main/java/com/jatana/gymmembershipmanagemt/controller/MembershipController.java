@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 
 @Slf4j
 @RestController
-@CrossOrigin(origins = "*", allowedHeaders = "*", allowCredentials = "true")
+@CrossOrigin
 @RequestMapping("/api")
 @Tag(name = "Memberships", description = "APIs for managing gym memberships")
 public class MembershipController {
