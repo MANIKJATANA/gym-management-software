@@ -20,10 +20,12 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import com.jatana.gymmembershipmanagemt.model.dto.response.ErrorResponse;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @RestController
+@CrossOrigin(origins = "*", allowedHeaders = "*", allowCredentials = "true")
 @RequestMapping("/api")
 @Tag(name = "Member Documents", description = "APIs for managing member documents (photos, ID proofs, etc.)")
 public class MemberDocumentController {

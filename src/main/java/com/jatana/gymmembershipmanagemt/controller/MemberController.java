@@ -21,12 +21,14 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import com.jatana.gymmembershipmanagemt.model.dto.response.ErrorResponse;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
 import java.time.LocalDate;
 import java.util.List;
 
 @Slf4j
 @RestController
+@CrossOrigin(origins = "*", allowedHeaders = "*", allowCredentials = "true")
 @RequestMapping("/api")
 @Tag(name = "Member Management", description = "APIs for managing gym members")
 public class MemberController {
